@@ -7,19 +7,20 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func CreateCashierHandler(userService *UserService) gin.HandlerFunc {
+func CreateUserHandler(userService *UserService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req struct {
 			Name     string `json:"name"`
 			Email    string `json:"email"`
 			Password string `json:"password"`
+			Role     string `json:"role"`
 		}
 		if err := c.ShouldBindJSON(&req); err != nil {
 			utils.ErrorResponse(c, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		user, err := userService.CreateCashier(req.Name, req.Email, req.Password)
+		user, err := userService.CreateCashier(req.Name, req.Email, req.Password, req.Role)
 		if err != nil {
 			utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
 			return

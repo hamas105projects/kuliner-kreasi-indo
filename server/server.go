@@ -32,17 +32,34 @@ func Run() {
 	// Users
 	usersGroup := api.Group("/users")
 	usersGroup.Use(middleware.AuthMiddleware(cfg.JWTSecret))
-	usersGroup.Use(middleware.RBACMiddleware([]string{"owner"}))
-	usersGroup.POST("/cashier", user.CreateCashierHandler(userService))
-	usersGroup.GET("/cashier", user.GetAllCashiersHandler(userService))
-	usersGroup.GET("/cashier/:id", user.GetCashierByIDHandler(userService))
-	usersGroup.PUT("/cashier/:id", user.UpdateCashierHandler(userService))
-	usersGroup.DELETE("/cashier/:id", user.DeleteCashierHandler(userService))
+	usersGroup.Use(middleware.RBACMiddleware([]string{"admin"}))
+	// Untuk membuat admin pertama kami mematikan atau mengkomen jwt
+	// untuk yang pertama kalinya, middleware.AuthMiddleware(cfg.JWTSecret) dan middleware.RBACMiddleware([]string{"admin"})
+	// 	{
+	//     "code": 200,
+	//     "data": {
+	//         "ID": "ea7ac4da-63fe-4c67-ab4f-81e529ed7167",
+	//         "Name": "Randi Imam",
+	//         "Email": "randi@mail.com",
+	//         "Password": "$2a$14....., telah di hash
+	//         "Role": "admin",
+	//         "CreatedAt": "2025-12-09T04:26:57.5702749+07:00",
+	//         "UpdatedAt": "2025-12-09T04:26:57.5702749+07:00",
+	//         "DeletedAt": null
+	//     },
+	//     "message": "Cashier created",
+	//     "status": "success"
+	// }
+	usersGroup.POST("/", user.CreateUserHandler(userService))
+	usersGroup.GET("/", user.GetAllCashiersHandler(userService))
+	usersGroup.GET("/:id", user.GetCashierByIDHandler(userService))
+	usersGroup.PUT("/:id", user.UpdateCashierHandler(userService))
+	usersGroup.DELETE("/:id", user.DeleteCashierHandler(userService))
 
 	// Sale Orders
 	salesGroup := api.Group("/sale-orders")
 	salesGroup.Use(middleware.AuthMiddleware(cfg.JWTSecret))
-	salesGroup.Use(middleware.RBACMiddleware([]string{"owner", "cashier"}))
+	salesGroup.Use(middleware.RBACMiddleware([]string{"admin", "cashier"}))
 	salesGroup.POST("", saleorder.CreateSaleOrderHandler(saleOrderService))
 	salesGroup.GET("", saleorder.GetAllSaleOrdersHandler(saleOrderService))
 	salesGroup.GET("/:id", saleorder.GetSaleOrderByIDHandler(saleOrderService))

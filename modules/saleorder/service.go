@@ -11,20 +11,61 @@ type SaleOrderService struct {
 }
 
 func (s *SaleOrderService) CreateSaleOrder(cashierID string, items []SaleOrderItem) (SaleOrder, error) {
+	// Mulai transaction
+	tx := s.Repo.DB.Begin()
+	if tx.Error != nil {
+		return SaleOrder{}, tx.Error
+	}
+
 	order := SaleOrder{
 		ID:        uuid.New(),
 		CashierID: uuid.MustParse(cashierID),
-		Items:     items,
 	}
 
 	total := 0.0
-	for _, item := range items {
-		total += float64(item.Qty) * item.Price
-	}
-	order.TotalAmount = total
 
-	err := s.Repo.Create(&order)
-	return order, err
+	// Simpan SaleOrder dulu
+	if err := tx.Create(&order).Error; err != nil {
+		tx.Rollback()
+		return order, err
+	}
+
+	// Insert item satu per satu (antrian)
+	for _, item := range items {
+		item.ID = uuid.New()
+		item.SaleOrderID = order.ID
+
+		// Ambil harga produk dari tabel products (snapshot)
+		var product Product
+		if err := tx.First(&product, "id = ?", item.ProductID).Error; err != nil {
+			tx.Rollback()
+			return order, err
+		}
+		item.PriceSnapshot = product.Price
+
+		// Hitung total
+		total += float64(item.Qty) * item.PriceSnapshot
+
+		// Insert item
+		if err := tx.Create(&item).Error; err != nil {
+			tx.Rollback()
+			return order, err
+		}
+	}
+
+	// Update total order
+	order.TotalAmount = total
+	if err := tx.Save(&order).Error; err != nil {
+		tx.Rollback()
+		return order, err
+	}
+
+	// Commit transaction
+	if err := tx.Commit().Error; err != nil {
+		return order, err
+	}
+
+	return order, nil
 }
 
 func (s *SaleOrderService) GetAllSaleOrders(offset, limit int) ([]SaleOrder, error) {
@@ -48,7 +89,7 @@ func (s *SaleOrderService) UpdateSaleOrder(id string, items []SaleOrderItem) (Sa
 	order.Items = items
 	total := 0.0
 	for _, item := range items {
-		total += float64(item.Qty) * item.Price
+		total += float64(item.Qty) * item.PriceSnapshot
 	}
 	order.TotalAmount = total
 

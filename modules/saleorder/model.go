@@ -18,11 +18,21 @@ type SaleOrder struct {
 }
 
 type SaleOrderItem struct {
+	ID            uuid.UUID `gorm:"type:uuid;primaryKey"`
+	SaleOrderID   uuid.UUID `gorm:"not null"`
+	ProductID     uuid.UUID `gorm:"not null"`
+	Qty           int       `gorm:"not null"`
+	PriceSnapshot float64   `gorm:"not null"`
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+	DeletedAt     gorm.DeletedAt `gorm:"index"`
+}
+
+type Product struct {
 	ID          uuid.UUID `gorm:"type:uuid;primaryKey"`
-	SaleOrderID uuid.UUID `gorm:"not null"`
-	ProductID   uuid.UUID `gorm:"not null"`
-	Qty         int       `gorm:"not null"`
+	Name        string    `gorm:"not null"`
 	Price       float64   `gorm:"not null"`
+	Description string    `gorm:"type:text"`
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 	DeletedAt   gorm.DeletedAt `gorm:"index"`

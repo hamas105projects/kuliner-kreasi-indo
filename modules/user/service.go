@@ -12,14 +12,14 @@ type UserService struct {
 	DB *gorm.DB
 }
 
-func (s *UserService) CreateCashier(name, email, password string) (User, error) {
+func (s *UserService) CreateCashier(name, email, password, role string) (User, error) {
 	hash, _ := utils.HashPassword(password)
 	user := User{
 		ID:       uuid.New(),
 		Name:     name,
 		Email:    email,
 		Password: hash,
-		Role:     "cashier",
+		Role:     role,
 	}
 	err := s.DB.Create(&user).Error
 	return user, err

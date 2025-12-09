@@ -51,10 +51,10 @@ func Run() {
 	//     "status": "success"
 	// }
 	usersGroup.POST("/", user.CreateUserHandler(userService))
-	usersGroup.GET("/", user.GetAllCashiersHandler(userService))
-	usersGroup.GET("/:id", user.GetCashierByIDHandler(userService))
-	usersGroup.PUT("/:id", user.UpdateCashierHandler(userService))
-	usersGroup.DELETE("/:id", user.DeleteCashierHandler(userService))
+	usersGroup.GET("cashier/", user.GetAllCashiersHandler(userService))
+	usersGroup.GET("cashier/:id", user.GetCashierByIDHandler(userService))
+	usersGroup.PUT("cashier/:id", user.UpdateCashierHandler(userService))
+	usersGroup.DELETE("cashier/:id", user.DeleteCashierHandler(userService))
 
 	// Sale Orders
 	salesGroup := api.Group("/sale-orders")

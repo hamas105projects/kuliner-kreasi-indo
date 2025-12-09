@@ -145,21 +145,21 @@ Turn off with comment this func temporary
 
 
 
-### 3️⃣ CRUD User Cashier (Owner Only)
+### 3️⃣ CRUD User Cashier (Admin Only)
 | Endpoint | Method | Test Case | Expected Result |
 |----------|--------|-----------|----------------|
 | `/api/users` | POST | Create new cashier | 200, role = cashier, status: success |
 | `/api/users/casier` | GET | List cashiers dengan pagination (`?page=1&limit=5`) | 200, status: success, data array sesuai limit |
 | `/api/users/cashier/:id` | GET | Ambil detail cashier valid | 200, status: success, data cashier |
 | `/api/users/cashier/:id` | GET | Ambil detail cashier invalid | 404, status: failed, message "not found" |
-| `/api/users/cashier/:id` | PUT | Update cashier (owner) | 200, data updated, status: success |
-| `/api/users/cashier/:id` | PUT | Update cashier (cashier) | 403 Forbidden, status: failed |
-| `/api/users/cashier/:id` | DELETE | Hapus cashier (owner) | 200, status: success |
-| `/api/users/cashier/:id` | DELETE | Hapus cashier (cashier) | 403 Forbidden, status: failed |
+| `/api/users/cashier/:id` | PUT | Update cashier (admin) | 200, data updated, status: success |
+| `/api/users/cashier/:id` | PUT | Update cashier (admin, cashier) | 403 Forbidden, status: failed |
+| `/api/users/cashier/:id` | DELETE | Hapus cashier (admin) | 200, status: success |
+| `/api/users/cashier/:id` | DELETE | Hapus cashier (admin,scashier) | 403 Forbidden, status: failed |
 
 ---
 
-### 4️⃣ CRUD Sale Order (Cashier & Owner)
+### 4️⃣ CRUD Sale Order (Cashier & Admin)
 | Endpoint | Method | Test Case | Expected Result |
 |----------|--------|-----------|----------------|
 | `/api/sale-orders` | POST | Buat order dengan beberapa item | 200, total_amount dihitung benar, status: success |

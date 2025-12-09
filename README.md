@@ -127,7 +127,7 @@ Project ini menggunakan beberapa package penting untuk membangun backend service
 ### 2️⃣ RBAC Middleware
 | Role | Endpoint | Test Case | Expected Result |
 |------|----------|-----------|----------------|
-| Cashier | `/users/cashier/*` | Akses endpoint owner-only | 403 Forbidden, status: failed |
+| Cashier | `/users/cashier/*` | Akses endpoint admin-only | 403 Forbidden, status: failed |
 | Owner | Semua | Akses semua endpoint | 200 OK, status: success |
 
 ---
@@ -140,17 +140,15 @@ Turn off with comment this func temporary
 | Endpoint | Method | Test Case | Expected Result |
 |----------|--------|-----------|----------------|
 
-| `/api/users/cashier` | POST | create user via cshier | 200, role = admin, status: success |
+| `/api/users` | POST | create user via cshier | 200, role = admin, status: success |
 
 
 
-salesGroup.Use(middleware.AuthMiddleware(cfg.JWTSecret))
-salesGroup.Use(middleware.RBACMiddleware([]string{"admin", "cashier"}))
 
 ### 3️⃣ CRUD User Cashier (Owner Only)
 | Endpoint | Method | Test Case | Expected Result |
 |----------|--------|-----------|----------------|
-| `/api/users/cashier` | POST | Create new cashier | 200, role = cashier, status: success |
+| `/api/users` | POST | Create new cashier | 200, role = cashier, status: success |
 | `/api/users/casier` | GET | List cashiers dengan pagination (`?page=1&limit=5`) | 200, status: success, data array sesuai limit |
 | `/api/users/cashier/:id` | GET | Ambil detail cashier valid | 200, status: success, data cashier |
 | `/api/users/cashier/:id` | GET | Ambil detail cashier invalid | 404, status: failed, message "not found" |
